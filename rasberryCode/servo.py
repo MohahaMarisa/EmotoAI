@@ -42,11 +42,11 @@ class Servo(object):
         self.FREQUENCY = frequency
         self.TIME_PER_TICK = ((1/self.FREQUENCY * 1000) / self.NUM_TICKS) * 1000; 
    
-   def setAngle(self, angle):
-       timeForAngle = servoMap(self, angle); 
-       self.pwm.set_pwm(self.channel, 0, int(calcPulseLen(time)))
+    def setAngle(self, angle):
+        timeForAngle = servoMap(self, angle); 
+        self.pwm.set_pwm(self.channel, 0, int(calcPulseLen(time)))
 
-    def servoMap(self, angle, servoMinAngle=0, servoMaxAngle=180)
+    def servoMap(self, angle, servoMinAngle=0, servoMaxAngle=180): 
 
         rightMin = self.minTime
         rightMax = self.maxTime
