@@ -56,8 +56,6 @@ class Servo(object):
     
         leftMin = servoMinAngle
         leftMax = servoMaxAngle
-        print("rightMax: ", rightMax)
-        print("rightMin: ", rightMin)
         leftSpan = leftMax - leftMin
         rightSpan = rightMax - rightMin
         # Convert the left range into a 0-1 range (float)
