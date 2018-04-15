@@ -22,11 +22,13 @@ def calcPulseLen(time):
 freqPeriodMicroSec = 16666.666666667
 pwm.set_pwm_freq(hz)
 
-servo_min_time = 556
-servo_max_time = 2501
+servo_min_time = 553
+servo_max_time = 2520
 
+pwm.set_pwm(1, 0, calcPulseLen(600));
+pwm.set_pwm(2, 0, calcPulseLen(590)); 
 while True:
     name = raw_input("enter time value ")
     if name == "end" : break
-    pwm.set_pwm(0, 0, calcPulseLen(int(name)))
+    pwm.set_pwm(3, 0, calcPulseLen(int(name)))
 

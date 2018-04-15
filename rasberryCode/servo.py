@@ -32,33 +32,40 @@ while True:
 """
 class Servo(object): 
     
-    def __init__(self, pwm, channel, servoPulseTimeMin, servoPulseTimeMax, frequency=60):
+    def __init__(self, pwm, channel, servoPulseTimeMin, servoPulseTimeMax, frequency=60.0):
         self.minTime = servoPulseTimeMin #this time should be calibrated so this is 0
-        self.maxTime = servoPulseTimeMin #this time should be calibrated so this is 180
+        self.maxTime = servoPulseTimeMax #this time should be calibrated so this is 180
         self.pwm = pwm
         self.channel = channel
         #define our constants 
         self.NUM_TICKS = 4096
         self.FREQUENCY = frequency
-        self.TIME_PER_TICK = ((1/self.FREQUENCY * 1000) / self.NUM_TICKS) * 1000; 
+        self.TIME_PER_TICK = 1/self.FREQUENCY
+        self.TIME_PER_TICK = self.TIME_PER_TICK * 1000
+        self.TIME_PER_TICK /= self.NUM_TICKS
+        self.TIME_PER_TICK *= 1000
    
     def setAngle(self, angle):
-        timeForAngle = servoMap(self, angle); 
-        self.pwm.set_pwm(self.channel, 0, int(calcPulseLen(time)))
+        timeForAngle = self.servoMap(180 - angle);
+        self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(timeForAngle)))
 
-    def servoMap(self, angle, servoMinAngle=0, servoMaxAngle=180): 
-
+    def servoMap(self, angle, servoMinAngle=0.0, servoMaxAngle=180.0): 
+        value = angle;
         rightMin = self.minTime
         rightMax = self.maxTime
     
         leftMin = servoMinAngle
         leftMax = servoMaxAngle
-        
+        print("rightMax: ", rightMax)
+        print("rightMin: ", rightMin)
         leftSpan = leftMax - leftMin
         rightSpan = rightMax - rightMin
-
         # Convert the left range into a 0-1 range (float)
         valueScaled = float(value - leftMin) / float(leftSpan)
 
         # Convert the 0-1 range into a value in the right range.
-        return rightMin + (valueScaled * rightSpan)
+        return (rightMin + (valueScaled * rightSpan))
+
+    def calcPulseLen(self, time):
+    
+        return time / self.TIME_PER_TICK
