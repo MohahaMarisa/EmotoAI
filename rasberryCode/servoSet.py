@@ -30,5 +30,5 @@ pwm.set_pwm(2, 0, calcPulseLen(590));
 while True:
     name = raw_input("enter time value ")
     if name == "end" : break
-    pwm.set_pwm(3, 0, calcPulseLen(int(name)))
+    pwm.set_pwm(4, 0, calcPulseLen(int(name)))
 

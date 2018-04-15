@@ -46,7 +46,7 @@ class Servo(object):
         self.TIME_PER_TICK *= 1000
    
     def setAngle(self, angle):
-        timeForAngle = self.servoMap(180 - angle);
+        timeForAngle = self.servoMap(angle);
         self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(timeForAngle)))
 
     def servoMap(self, angle, servoMinAngle=0.0, servoMaxAngle=180.0): 
