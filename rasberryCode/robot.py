@@ -3,7 +3,7 @@ class Robot(object):
     
     def __init__(self, joints):
         self.joints = joints 
-        self.framerate = 1000 
+        self.framerate = 30 
     def incrementMove(self, i, moveDict):
         #if 'foot' in self.joints:                                           
         #    self.joints['foot'].setAngle(moveDict['foot'][i])
@@ -13,7 +13,7 @@ class Robot(object):
             self.joints['elbow'].setAngle(180 - moveDict['elbow'][i])
         if 'wrist' in self.joints:
             #we may need to add 90 to the wrist
-            self.joints['wrist'].setAngle(90 + moveDict['wrist'][i])
+            self.joints['wrist'].setAngle(moveDict['wrist'][i] - 110)
         if 'neck' in self.joints:
             self.joints['neck'].setAngle(moveDict['neck'][i])
         if 'phone' in self.joints:
