@@ -10,7 +10,7 @@ class Robot(object):
         if 'shoulder' in self.joints:
             self.joints['shoulder'].setAngle(moveDict['shoulder'][i])
         if 'elbow' in self.joints:
-            self.joints['elbow'].setAngle(180 - moveDict['elbow'][i])
+            self.joints['elbow'].setAngle( moveDict['elbow'][i])
         if 'wrist' in self.joints:
             #we may need to add 90 to the wrist
             self.joints['wrist'].setAngle(moveDict['wrist'][i] - 110)
