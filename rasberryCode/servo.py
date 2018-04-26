@@ -18,12 +18,11 @@ print(timePerTick)
 def calcPulseLen(time):
     
     return int(time / timePerTick)
-
 freqPeriodMicroSec = 16666.666666667
 pwm.set_pwm_freq(hz)
 
 servo_min_time = 556
-servo_max_time = 2501
+servo_max_time = 250
 
 while True:
     name = raw_input("enter time value ")
@@ -65,5 +64,13 @@ class Servo(object):
         return (rightMin + (valueScaled * rightSpan))
 
     def calcPulseLen(self, time):
-    
         return time / self.TIME_PER_TICK
+
+    def setAngleMode(self): 
+        while True: 
+            name = raw_input("enter time value ")
+            if name == "end" : break
+            self.setAngle(int(name))
+            print(name)
+
+           

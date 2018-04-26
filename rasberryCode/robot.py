@@ -20,18 +20,23 @@ class Robot(object):
             self.joints['phone'].setAngle(moveDict['phone'][i])
 
     def executeMove(self, moveDict):
-        moveLen = len(moveDict['foot']) 
+        moveLen = len(moveDict['phone']) 
         print("moveLen: ", moveLen); 
         i = 0
-        time_time = time.time
-        start = time_time()
-        period = 1.0 / self.framerate
+#        time_time = time.time
+#        start = time_time()
+#        period = 1.0 / self.framerate
         while(i < moveLen):
-            if (time_time() - start) > period:
-                start += period
-                self.incrementMove(i, moveDict)
-                i+=1
+            #if (time_time() - start) > period:
+                #start += period
+            self.incrementMove(i, moveDict)
+            i+=1
 
-    def powerDown(self): 
+    def setManyAngles(self): 
         for joint in self.joints:
-            self.joints[joint].setAngle(self.joints[joint].minTime)
+            print(joint)
+            self.joints[joint].setAngleMode()
+
+    def setJoint(self, joint, angle):
+        desiredJoint = self.joints[joint]
+        desiredJoint.setAngle(angle)
