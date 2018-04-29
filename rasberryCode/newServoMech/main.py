@@ -31,8 +31,8 @@ joints['shoulder'] = shoulder
 
 #Elbow Servo - HS645MG
 ELBOW_CHANNEL = 2
-ELBOW_MINTIME = 390
-ELBOW_MAXTIME = 2050
+ELBOW_MINTIME = 650
+ELBOW_MAXTIME = 2450
 
 elbow = Servo(pwm, ELBOW_CHANNEL, ELBOW_MINTIME, ELBOW_MAXTIME)
 joints['elbow'] = elbow
@@ -73,7 +73,10 @@ moveSet = {
     'neckOffset' : 65 
 }
 
-elbow.setAngle(0)
-
-elbow.setSinAngle(130)
+if __name__=='__main__':
+    while(True):
+        name = raw_input("sinSet: ")
+        if name == "end" : break
+        elbow.setSinAngle(int(name));
+#elbow.setSinAngleHelper(20);
 

@@ -31,7 +31,7 @@ while True:
     if name == "end" : break
     pwm.set_pwm(0, 0, calcPulseLen(int(name)))
 """
-class Servo(Thread): 
+class Servo(object): 
     
     def __init__(self, pwm, channel, servoPulseTimeMin, servoPulseTimeMax, frequency=60.0):
         self.minTime = servoPulseTimeMin #this time should be calibrated so this is 0
@@ -48,26 +48,36 @@ class Servo(Thread):
         
         self.currentAngle = 0 
         self.newAngle = None
-        Thread.__init__(self)
+        
 
     def setAngle(self, angle):
-        timeForAngle = self.servoMap(angle);
+        timeForAngle = self.servoMap(angle)
+        print("Time For Given Angle: ", timeForAngle)
         self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(timeForAngle)))
     
     def setSinAngleHelper(self):
+        print("currAngle :", self.currentAngle)
+        print("newAngle  :", self.newAngle)
+
         currAnglePulse = self.servoMap(self.currentAngle)
         finalAnglePulse = self.servoMap(self.newAngle)
-
-        for i in range(currAnglePulse, finalAnglePulse): 
-            self.pwm.set_pwm(self.channel, 0, i) 
+        if currAnglePulse < finalAnglePulse: step = 1
+        else: step = -1
+        print("step: ", step) 
+        for i in range(currAnglePulse, finalAnglePulse, step): 
+            print("setting thing: ", i)
+            self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(i))) 
     
     def run(self):
         self.setSinAngleHelper()
         
     def setSinAngle(self, angle):
+        self.thread = Thread(target=self.run)
         self.newAngle = angle
-        self.start()
-        
+        self.thread.start()
+        self.thread.join()     
+        self.currentAngle = angle
+
     def servoMap(self, angle, servoMinAngle=0.0, servoMaxAngle=180.0): 
         value = angle;
         rightMin = self.minTime
