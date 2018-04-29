@@ -1,5 +1,5 @@
 from threading import Thread
-
+import math
 """ from __future__ import division
 import time
 import string
@@ -61,12 +61,17 @@ class Servo(object):
 
         currAnglePulse = self.servoMap(self.currentAngle)
         finalAnglePulse = self.servoMap(self.newAngle)
-        if currAnglePulse < finalAnglePulse: step = 1
-        else: step = -1
-        print("step: ", step) 
-        for i in range(currAnglePulse, finalAnglePulse, step): 
-            print("setting thing: ", i)
-            self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(i))) 
+        
+        pulseDiff = finalAnglePulse - currAnglePulse
+
+        theta = 0.0
+        speed = 0.006
+        
+     
+        while (theta <= math.pi/2):
+            currentMS = currAnglePulse + (math.sin(theta) * pulseDiff)
+            self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(currentMS)))
+            theta += speed    
     
     def run(self):
         self.setSinAngleHelper()
@@ -74,10 +79,11 @@ class Servo(object):
     def setSinAngle(self, angle):
         self.thread = Thread(target=self.run)
         self.newAngle = angle
-        self.thread.start()
-        self.thread.join()     
-        self.currentAngle = angle
 
+        self.thread.start()
+        
+        self.currentAngle = angle
+        self.thread.join()
     def servoMap(self, angle, servoMinAngle=0.0, servoMaxAngle=180.0): 
         value = angle;
         rightMin = self.minTime

@@ -77,6 +77,6 @@ if __name__=='__main__':
     while(True):
         name = raw_input("sinSet: ")
         if name == "end" : break
-        elbow.setSinAngle(int(name));
+        shoulder.setSinAngle(int(name))
 #elbow.setSinAngleHelper(20);
 
