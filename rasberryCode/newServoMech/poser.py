@@ -71,21 +71,12 @@ moveSet = {
     'phone': 40
 }
 
-def sawTooth(x): 
-    return math.sin(x + math.sin(x) / 2)
-
-pos1 = {'shoulder': 10, 'elbow': 0, 'wrist': 35, 'neck': 75, 'phone': 0}
-pos2 = {'shoulder': 50, 'elbow': 30, 'wrist': 35, 'neck': 95, 'phone': 30} 
-pos2fn = {'shoulder': sawTooth, 'elbow': sawTooth, 'wrist':sawTooth}
-pos3 = {'shoulder': 70, 'elbow': 50, 'wrist': 55, 'neck': 45, 'phone': 75} 
-
 if __name__=='__main__':
     pool = ThreadPool(5)    
     robit.initializePosition()
-    while(True): 
-        robit.moveToPos(pos1, pool)
-        robit.moveToPos(pos2, pool, pos2fn)
-        robit.moveToPos(pos3, pool) 
+    
+    
+    while (True): robit.setManyAngles()
 
 
 

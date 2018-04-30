@@ -1,4 +1,6 @@
 import time, sched
+import math
+
 class Robot(object):
     
     def __init__(self, joints):
@@ -33,9 +35,12 @@ class Robot(object):
             i+=1
 
     def setManyAngles(self): 
+        moveSet = dict()
         for joint in self.joints:
             print(joint)
-            self.joints[joint].setAngleMode()
+            a = self.joints[joint].setAngleMode()
+            moveSet[joint] = a
+        print(moveSet)
 
     def setJoint(self, joint, angle):
         desiredJoint = self.joints[joint]
@@ -43,4 +48,33 @@ class Robot(object):
 
     def initializePosition(self):
         for joint in self.joints:
-            self.joints[joint].setSinAngle(0)
+            if joint == "neck":
+                self.joints['neck'].setSinAngle(75)
+            else:
+                self.joints[joint].setSinAngle(0)
+
+    def moveToPos(self, moveSet, pool, functionSet = dict(), epSet = dict()):
+        elbow = self.joints['elbow']
+        shoulder = self.joints['shoulder']
+        wrist = self.joints['wrist']
+        neck = self.joints['neck']
+        phone = self.joints['phone']
+
+        for joint in self.joints:
+            if (joint in functionSet):
+                self.joints[joint].interpfunction = functionSet[joint]
+            else:
+                self.joints[joint].interpfunction = math.sin
+            if (joint in epSet): 
+                self.joints[joint].ep = epSet[joint] 
+            else:
+                self.joints[joint].ep = math.pi/2
+        
+        
+        pool.add_task(elbow.setSinAngle, moveSet['elbow'], self.joints['elbow'].interpfunction, self.joints['elbow'].ep)
+        pool.add_task(shoulder.setSinAngle, moveSet['shoulder'], self.joints['shoulder'].interpfunction, self.joints['elbow'].ep)
+        pool.add_task(wrist.setSinAngle, moveSet['wrist'], self.joints['wrist'].interpfunction, self.joints['wrist'].ep)
+        pool.add_task(neck.setSinAngle, moveSet['neck'], self.joints['neck'].interpfunction, self.joints['neck'].ep)
+        pool.add_task(phone.setSinAngle, moveSet['phone'], self.joints['phone'].interpfunction, self.joints['phone'].ep)
+        pool.wait_completion()
+      

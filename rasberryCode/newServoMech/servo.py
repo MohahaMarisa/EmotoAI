@@ -18,7 +18,8 @@ class Servo(object):
         
         self.currentAngle = 0 
         self.newAngle = None
-        
+        self.interpfunction = math.sin
+        self.ep = math.pi/2
 
     def setAngle(self, angle):
         timeForAngle = self.servoMap(angle)
@@ -43,8 +44,8 @@ class Servo(object):
     
     def run(self):
         self.setSinAngleHelper()
-        
-    def setSinAngle(self, angle, wavefn = math.sin, endPeriod = math.pi/2):
+    
+    def setSinAngle(self, angle, wavefn=math.sin, endPeriod=math.pi/2):
         #self.thread = Thread(target=self.run)
         self.newAngle = angle
         self.setSinAngleHelper(wavefn, endPeriod)
@@ -70,10 +71,12 @@ class Servo(object):
         return time / self.TIME_PER_TICK
 
     def setAngleMode(self): 
+        finalAngle = 0 
         while True: 
             name = raw_input("enter time value ")
             if name == "end" : break
             self.setSinAngle(int(name))
+            finalAngle = int(name) 
             print(name)
-
+        return finalAngle
            
