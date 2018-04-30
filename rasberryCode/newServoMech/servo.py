@@ -1,36 +1,6 @@
 from threading import Thread
 import math
-""" from __future__ import division
-import time
-import string
 
-
-import Adafruit_PCA9685
-
-pwm = Adafruit_PCA9685.PCA9685()
-
-numTicks = 4096 #number of ticks per cycle
-hz = 60        #frequency of cycle
-freqlen = 1/hz  #time in seconds of a single period
-freqlenMS = freqlen * 1000 #time in ms of a single period
-print(freqlenMS)
-timePerTick = freqlenMS / numTicks #time in ms of a single tick
-timePerTick *= 1000 #time in us of a single period. 
-print(timePerTick)
-def calcPulseLen(time):
-    
-    return int(time / timePerTick)
-freqPeriodMicroSec = 16666.666666667
-pwm.set_pwm_freq(hz)
-
-servo_min_time = 556
-servo_max_time = 250
-
-while True:
-    name = raw_input("enter time value ")
-    if name == "end" : break
-    pwm.set_pwm(0, 0, calcPulseLen(int(name)))
-"""
 class Servo(object): 
     
     def __init__(self, pwm, channel, servoPulseTimeMin, servoPulseTimeMax, frequency=60.0):
@@ -52,12 +22,9 @@ class Servo(object):
 
     def setAngle(self, angle):
         timeForAngle = self.servoMap(angle)
-        print("Time For Given Angle: ", timeForAngle)
         self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(timeForAngle)))
     
-    def setSinAngleHelper(self):
-        print("currAngle :", self.currentAngle)
-        print("newAngle  :", self.newAngle)
+    def setSinAngleHelper(self, wavefn, endPeriod):
 
         currAnglePulse = self.servoMap(self.currentAngle)
         finalAnglePulse = self.servoMap(self.newAngle)
@@ -67,23 +34,24 @@ class Servo(object):
         theta = 0.0
         speed = 0.006
         
-     
-        while (theta <= math.pi/2):
-            currentMS = currAnglePulse + (math.sin(theta) * pulseDiff)
+        i = 0; 
+        while (theta <= endPeriod):
+            currentMS = currAnglePulse + (wavefn(theta) * pulseDiff)
             self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(currentMS)))
             theta += speed    
+            i+=1 
     
     def run(self):
         self.setSinAngleHelper()
         
-    def setSinAngle(self, angle):
-        self.thread = Thread(target=self.run)
+    def setSinAngle(self, angle, wavefn = math.sin, endPeriod = math.pi/2):
+        #self.thread = Thread(target=self.run)
         self.newAngle = angle
-
-        self.thread.start()
-        
+        self.setSinAngleHelper(wavefn, endPeriod)
+        #self.thread.start()
+        #self.thread.join()
         self.currentAngle = angle
-        self.thread.join()
+    
     def servoMap(self, angle, servoMinAngle=0.0, servoMaxAngle=180.0): 
         value = angle;
         rightMin = self.minTime
@@ -105,7 +73,7 @@ class Servo(object):
         while True: 
             name = raw_input("enter time value ")
             if name == "end" : break
-            self.setAngle(int(name))
+            self.setSinAngle(int(name))
             print(name)
 
            

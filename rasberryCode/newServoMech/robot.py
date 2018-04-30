@@ -40,3 +40,7 @@ class Robot(object):
     def setJoint(self, joint, angle):
         desiredJoint = self.joints[joint]
         desiredJoint.setAngle(angle)
+
+    def initializePosition(self):
+        for joint in self.joints:
+            self.joints[joint].setSinAngle(0)

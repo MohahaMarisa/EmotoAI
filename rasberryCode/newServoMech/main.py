@@ -3,6 +3,7 @@ from servo import Servo
 import math
 import Adafruit_PCA9685
 import time
+from pool import ThreadPool
 
 FREQ = 60; 
 joints = dict()
@@ -74,9 +75,24 @@ moveSet = {
 }
 
 if __name__=='__main__':
+    pool = ThreadPool(5)    
+    robit.initializePosition()
+
+"""
     while(True):
-        name = raw_input("sinSet: ")
-        if name == "end" : break
-        shoulder.setSinAngle(int(name))
-#elbow.setSinAngleHelper(20);
+        pool.add_task(elbow.setSinAngle, moveSet['elbowOffset'])
+        pool.add_task(shoulder.setSinAngle, moveSet['shoulderOffset'])
+        pool.add_task(wrist.setSinAngle, moveSet['wristOffset'])
+        pool.add_task(neck.setSinAngle, moveSet['neckOffset'])
+        pool.wait_completion()
+        pool.add_task(elbow.setSinAngle, moveSet['elbowGoal'])            
+        pool.add_task(shoulder.setSinAngle, moveSet['shoulderGoal'])
+        pool.add_task(wrist.setSinAngle, moveSet['wristGoal'])
+        pool.add_task(neck.setSinAngle, moveSet['neckGoal'])
+        pool.wait_completion()
+
+
+
+"""
+
 
