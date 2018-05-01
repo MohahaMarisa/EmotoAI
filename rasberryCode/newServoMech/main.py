@@ -38,8 +38,8 @@ ELBOW_MAXTIME = 2450
 elbow = Servo(pwm, ELBOW_CHANNEL, ELBOW_MINTIME, ELBOW_MAXTIME)
 joints['elbow'] = elbow
 
-#Wrist Servo - HS425BB 
-WRIST_CHANNEL = 3
+#Wrist Servo - HS645MG 
+WRIST_CHANNEL = 5
 WRIST_MINTIME = 553
 WRIST_MAXTIME = 2520
 
@@ -55,7 +55,7 @@ neck = Servo(pwm, NECK_CHANNEL, NECK_MINTIME, NECK_MAXTIME)
 joints['neck'] = neck
 
 #Phone Servo - HS645MG
-PHONE_CHANNEL = 5
+PHONE_CHANNEL = 3
 PHONE_MINTIME = 553
 PHONE_MAXTIME = 2520
 
@@ -72,16 +72,27 @@ moveSet = {
 }
 
 def sawTooth(x): 
-    return math.sin(x + math.sin(x) / 2)
+    return math.sin(x - math.sin(x) / 2)
 
+def connectPhone(pool): 
+    moveSetArray = []
+    moveSetArray[0] =  
+
+    for pos in moveSetArray:
+        robit.moveToPos(pos, pool); 
+
+    return
 pos1 = {'shoulder': 10, 'elbow': 0, 'wrist': 35, 'neck': 75, 'phone': 0}
 pos2 = {'shoulder': 50, 'elbow': 30, 'wrist': 35, 'neck': 95, 'phone': 30} 
+
 pos2fn = {'shoulder': sawTooth, 'elbow': sawTooth, 'wrist':sawTooth}
+
 pos3 = {'shoulder': 70, 'elbow': 50, 'wrist': 55, 'neck': 45, 'phone': 75} 
 
 if __name__=='__main__':
     pool = ThreadPool(5)    
     robit.initializePosition()
+    
     while(True): 
         robit.moveToPos(pos1, pool)
         robit.moveToPos(pos2, pool, pos2fn)
