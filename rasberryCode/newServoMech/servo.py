@@ -33,7 +33,7 @@ class Servo(object):
         pulseDiff = finalAnglePulse - currAnglePulse
 
         theta = 0.0
-        speed = 0.006
+        speed = 0.009
         
         i = 0; 
         while (theta <= endPeriod):
@@ -73,7 +73,7 @@ class Servo(object):
     def setAngleMode(self): 
         finalAngle = 0 
         while True: 
-            name = raw_input("enter time value ")
+            name = raw_input("enter angle` value ")
             if name == "end" : break
             self.setSinAngle(int(name))
             finalAngle = int(name) 

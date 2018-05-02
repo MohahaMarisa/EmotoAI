@@ -51,7 +51,7 @@ class Robot(object):
             if joint == "neck":
                 self.joints['neck'].setSinAngle(75)
             else:
-                self.joints[joint].setSinAngle(0)
+                self.joints[joint].setSinAngle(30)
 
     def moveToPos(self, moveSet, pool, functionSet = dict(), epSet = dict()):
         elbow = self.joints['elbow']

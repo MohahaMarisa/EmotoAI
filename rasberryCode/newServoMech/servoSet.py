@@ -27,7 +27,7 @@ servo_min_time = 900
 servo_max_time = 2100
 theta = 0.0; 
 channelSet = False
-channel = 1
+channel = 4
 while True:
     name = raw_input("enter time value ")
     if name == "end" : break
