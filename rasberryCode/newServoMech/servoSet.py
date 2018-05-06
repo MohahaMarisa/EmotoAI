@@ -28,6 +28,9 @@ servo_max_time = 2100
 theta = 0.0; 
 channelSet = False
 channel = 4
+
+pwm.set_all_pwm(0,0);
+
 while True:
     name = raw_input("enter time value ")
     if name == "end" : break

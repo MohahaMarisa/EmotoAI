@@ -3,9 +3,12 @@ import math
 
 class Servo(object): 
     
-    def __init__(self, pwm, channel, servoPulseTimeMin, servoPulseTimeMax, frequency=60.0):
+    def __init__(self, pwm, channel, servoPulseTimeMin, servoPulseTimeMax, 
+                 servoAngleMin=0.0, servoAngleMax = 180.0, frequency=60.0):
         self.minTime = servoPulseTimeMin #this time should be calibrated so this is 0
-        self.maxTime = servoPulseTimeMax #this time should be calibrated so this is 180
+        self.maxTime = servoPulseTimeMax #this time should be calibrated so this is angleMax 
+        self.angleMin = servoAngleMin
+        self.angleMax = servoAngleMax
         self.pwm = pwm
         self.channel = channel
         #define our constants 
@@ -27,8 +30,8 @@ class Servo(object):
     
     def setSinAngleHelper(self, wavefn, endPeriod):
 
-        currAnglePulse = self.servoMap(self.currentAngle)
-        finalAnglePulse = self.servoMap(self.newAngle)
+        currAnglePulse = self.servoMap(self.currentAngle, self.angleMin, self.angleMax)
+        finalAnglePulse = self.servoMap(self.newAngle, self.angleMin, self.angleMax)
         
         pulseDiff = finalAnglePulse - currAnglePulse
 
@@ -53,7 +56,7 @@ class Servo(object):
         #self.thread.join()
         self.currentAngle = angle
     
-    def servoMap(self, angle, servoMinAngle=0.0, servoMaxAngle=180.0): 
+    def servoMap(self, angle, servoMinAngle, servoMaxAngle): 
         value = angle;
         rightMin = self.minTime
         rightMax = self.maxTime

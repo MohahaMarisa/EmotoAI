@@ -34,11 +34,12 @@ joints['shoulder'] = shoulder
 #Elbow Servo - HS645MG
 ELBOW_CHANNEL = 2
 
-ELBOW180_MIN = 650
-ELBOW180_MAX = 2450
+#150 degrees of freedom as is! 
+ELBOW180_MIN = 850
+ELBOW180_MAX = 2250
 
-ELBOW_MINTIME = 650
-ELBOW_MAXTIME = 2450
+ELBOW_MINTIME = 850
+ELBOW_MAXTIME = 2400
 
 elbow = Servo(pwm, ELBOW_CHANNEL, ELBOW180_MIN, ELBOW180_MAX) 
 joints['elbow'] = elbow
@@ -120,8 +121,9 @@ if __name__=='__main__':
     #robit.initializePosition()
     while(True):
     	smoothInitializePosition(robit,pool)
-    	#command = input("enter start to begin movement")
+    	command = raw_input("enter start to begin movement")
     	connectPhone(pool)
+	command2 = raw_input("enter to restart loop")
 
 
 
