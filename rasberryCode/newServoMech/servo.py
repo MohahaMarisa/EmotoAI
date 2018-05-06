@@ -4,11 +4,22 @@ import math
 class Servo(object): 
     
     def __init__(self, pwm, channel, servoPulseTimeMin, servoPulseTimeMax, 
-                 servoAngleMin=0.0, servoAngleMax = 180.0, frequency=60.0):
+                 safeMinTime, safeMaxTime, servoAngleMin=0.0, servoAngleMax = 180.0, frequency=60.0):
+        
+
+        #these values below represent the maximum rotation times for the servo,
+        #but say nothing about the saftey of these rotations
         self.minTime = servoPulseTimeMin #this time should be calibrated so this is 0
         self.maxTime = servoPulseTimeMax #this time should be calibrated so this is angleMax 
+      
+        #these times are the safe range of movement for each servo  
+        self.safeMinTime = safeMinTime
+        self.safeMaxTime = safeMaxTime 
+
+        #these degree values are the servos hard stops for motion, defaulted from [0, 180.0]
         self.angleMin = servoAngleMin
         self.angleMax = servoAngleMax
+        
         self.pwm = pwm
         self.channel = channel
         #define our constants 
@@ -23,6 +34,9 @@ class Servo(object):
         self.newAngle = None
         self.interpfunction = math.sin
         self.ep = math.pi/2
+    
+    def constrain(val, minVal, maxVal):
+        return min(maxVal, max(minVal, val))
 
     def setAngle(self, angle):
         timeForAngle = self.servoMap(angle)
