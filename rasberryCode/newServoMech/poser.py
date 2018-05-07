@@ -1,4 +1,4 @@
-from robot import Robot
+from robot import Robot 
 from servo import Servo
 import math
 import Adafruit_PCA9685
@@ -6,9 +6,12 @@ import time
 from pool import ThreadPool
 
 FREQ = 60; 
+FREQ2 = 300; 
 joints = dict()
 
 pwm = Adafruit_PCA9685.PCA9685() 
+pwm2 = Adafruit_PCA9685.PCA9685(0x41)
+pwm2.set_pwm_freq(FREQ2);
 pwm.set_pwm_freq(FREQ); 
 
 """
@@ -41,7 +44,7 @@ ELBOW180_MAX = 2250
 ELBOW_MINTIME = 910 
 ELBOW_MAXTIME = 1500 
 
-elbow = Servo(pwm, ELBOW_CHANNEL, ELBOW180_MIN, ELBOW180_MAX, ELBOW_MINTIME, ELBOW_MAXTIME, servoAngleMax = 150.0) 
+elbow = Servo(pwm2, ELBOW_CHANNEL, ELBOW180_MIN, ELBOW180_MAX, ELBOW_MINTIME, ELBOW_MAXTIME, servoAngleMax = 150.0, frequency=300.0) 
 joints['elbow'] = elbow
 print("elbow done")
 #Wrist Servo - HS645MG 

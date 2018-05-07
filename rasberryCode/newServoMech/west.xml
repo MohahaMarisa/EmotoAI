@@ -1,0 +1,7 @@
+<Servos>
+    <shoulder pos="0"/>
+    <elbow pos="90"/>
+    <wrist pos = "0"/>
+    <neck pos = "0"/>
+    <phone pos="0"/>
+</Servos>
