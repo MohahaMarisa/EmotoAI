@@ -49,9 +49,9 @@ class Robot(object):
     def initializePosition(self):
         for joint in self.joints:
             if joint == "neck":
-                self.joints['neck'].setSinAngle(75)
+                self.joints['neck'].setSinAngle(20)
             else:
-                self.joints[joint].setSinAngle(30)
+                self.joints[joint].setSinAngle(20)
 
     def moveToPos(self, moveSet, pool, functionSet = dict(), epSet = dict()):
         elbow = self.joints['elbow']
@@ -59,7 +59,10 @@ class Robot(object):
         wrist = self.joints['wrist']
         neck = self.joints['neck']
         phone = self.joints['phone']
-
+        speed = 0.006;        
+        if ('speed' in moveSet):
+            speed = moveSet['speed']
+    
         for joint in self.joints:
             if (joint in functionSet):
                 self.joints[joint].interpfunction = functionSet[joint]
@@ -67,14 +70,14 @@ class Robot(object):
                 self.joints[joint].interpfunction = math.sin
             if (joint in epSet): 
                 self.joints[joint].ep = epSet[joint] 
+                print('setting' + joint + ' ep') 
             else:
                 self.joints[joint].ep = math.pi/2
         
-        
-        pool.add_task(elbow.setSinAngle, moveSet['elbow'], self.joints['elbow'].interpfunction, self.joints['elbow'].ep)
-        pool.add_task(shoulder.setSinAngle, moveSet['shoulder'], self.joints['shoulder'].interpfunction, self.joints['elbow'].ep)
-        pool.add_task(wrist.setSinAngle, moveSet['wrist'], self.joints['wrist'].interpfunction, self.joints['wrist'].ep)
-        pool.add_task(neck.setSinAngle, moveSet['neck'], self.joints['neck'].interpfunction, self.joints['neck'].ep)
-        pool.add_task(phone.setSinAngle, moveSet['phone'], self.joints['phone'].interpfunction, self.joints['phone'].ep)
+        pool.add_task(elbow.setSinAngle, moveSet['elbow'], elbow.interpfunction, elbow.ep, speed)
+        pool.add_task(shoulder.setSinAngle, moveSet['shoulder'], shoulder.interpfunction, shoulder.ep, speed)
+        pool.add_task(wrist.setSinAngle, moveSet['wrist'], wrist.interpfunction, wrist.ep, speed)
+        pool.add_task(neck.setSinAngle, moveSet['neck'], neck.interpfunction, neck.ep, speed)
+        pool.add_task(phone.setSinAngle, moveSet['phone'], phone.interpfunction, phone.ep, speed)
         pool.wait_completion()
       

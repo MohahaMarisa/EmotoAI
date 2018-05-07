@@ -4,7 +4,7 @@ import math
 class Servo(object): 
     
     def __init__(self, pwm, channel, servoPulseTimeMin, servoPulseTimeMax, 
-                 safeMinTime, safeMaxTime, servoAngleMin=0.0, servoAngleMax = 180.0, frequency=60.0):
+                 safeMinTime, safeMaxTime, printing=False, servoAngleMin=0.0, servoAngleMax = 180.0, frequency=60.0):
         
 
         #these values below represent the maximum rotation times for the servo,
@@ -30,31 +30,37 @@ class Servo(object):
         self.TIME_PER_TICK /= self.NUM_TICKS
         self.TIME_PER_TICK *= 1000
         
-        self.currentAngle = 0 
+        self.currentAngle = 20 
         self.newAngle = None
         self.interpfunction = math.sin
-        self.ep = math.pi/2
+        self.endPeriod = math.pi/2 
+        self.printing = printing
     
-    def constrain(val, minVal, maxVal):
+    def constrain(self,val, minVal, maxVal):
         return min(maxVal, max(minVal, val))
-
+    def specialSin(self,x): 
+        return ((x/2)**2)
     def setAngle(self, angle):
         timeForAngle = self.servoMap(angle)
         self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(timeForAngle)))
     
-    def setSinAngleHelper(self, wavefn, endPeriod):
+    def setSinAngleHelper(self, wavefn, endPeriod, speed):
 
         currAnglePulse = self.servoMap(self.currentAngle, self.angleMin, self.angleMax)
+        currAnglePulse = self.constrain(currAnglePulse, self.safeMinTime, self.safeMaxTime)
+        
         finalAnglePulse = self.servoMap(self.newAngle, self.angleMin, self.angleMax)
-        
-        pulseDiff = finalAnglePulse - currAnglePulse
+        finalAnglePulse = self.constrain(finalAnglePulse, self.safeMinTime, self.safeMaxTime);  
 
-        theta = 0.0
-        speed = 0.009
+        pulseDiff = finalAnglePulse - currAnglePulse
         
+        theta = 0.0
+         
         i = 0; 
         while (theta <= endPeriod):
             currentMS = currAnglePulse + (wavefn(theta) * pulseDiff)
+#            if(self.printing):
+#                print("wavefn(theat): ", wavefn(theta))
             self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(currentMS)))
             theta += speed    
             i+=1 
@@ -62,10 +68,10 @@ class Servo(object):
     def run(self):
         self.setSinAngleHelper()
     
-    def setSinAngle(self, angle, wavefn=math.sin, endPeriod=math.pi/2):
+    def setSinAngle(self, angle, wavefn=math.sin, endPeriod=math.pi/2, speed=0.006):
         #self.thread = Thread(target=self.run)
         self.newAngle = angle
-        self.setSinAngleHelper(wavefn, endPeriod)
+        self.setSinAngleHelper(wavefn, endPeriod, speed)
         #self.thread.start()
         #self.thread.join()
         self.currentAngle = angle
