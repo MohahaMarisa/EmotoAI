@@ -1,7 +1,7 @@
-<Servos>
-    <shoulder pos="0"/>
-    <elbow pos="90"/>
-    <wrist pos = "0"/>
-    <neck pos = "0"/>
-    <phone pos="0"/>
+<?xml version="1.0" ?><Servos>
+    <shoulder pos="0.000156388768971"/>
+    <elbow pos="42.9643715885"/>
+    <wrist pos="4.8128342246"/>
+    <neck pos="94.9748779083"/>
+    <phone pos="0.0"/>
 </Servos>

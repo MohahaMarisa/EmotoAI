@@ -1,5 +1,6 @@
 import time, sched
 import math
+from xml.dom import minidom
 
 class Robot(object):
     
@@ -52,6 +53,15 @@ class Robot(object):
                 self.joints['neck'].setSinAngle(20)
             else:
                 self.joints[joint].setSinAngle(20)
+    
+    def writePositions(self):
+        xmldoc = minidom.parse('west.xml')
+        for joint in self.joints:
+            elem = xmldoc.getElementsByTagName(joint)[0]
+            elem.setAttribute('pos', str(self.joints[joint].currentAngle))
+            
+        with open('west.xml', 'wb') as f: 
+             xmldoc.writexml(f)
 
     def moveToPos(self, moveSet, pool, functionSet = dict(), epSet = dict()):
         elbow = self.joints['elbow']
@@ -70,7 +80,6 @@ class Robot(object):
                 self.joints[joint].interpfunction = math.sin
             if (joint in epSet): 
                 self.joints[joint].ep = epSet[joint] 
-                print('setting' + joint + ' ep') 
             else:
                 self.joints[joint].ep = math.pi/2
         

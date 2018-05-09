@@ -1,4 +1,4 @@
-from robot import Robot 
+from robot import Robot
 from servo import Servo
 import math
 import Adafruit_PCA9685
@@ -6,14 +6,12 @@ import time
 from pool import ThreadPool
 
 FREQ = 60; 
-FREQ2 = 300; 
 joints = dict()
 
-pwm = Adafruit_PCA9685.PCA9685() 
+pwm = Adafruit_PCA9685.PCA9685(0x40) 
+pwm.set_pwm_freq(FREQ) 
 pwm2 = Adafruit_PCA9685.PCA9685(0x41)
-pwm2.set_pwm_freq(FREQ2);
-pwm.set_pwm_freq(FREQ); 
-
+pwm2.set_pwm_freq(300.0)
 """
 #Foot Servo
 FOOT_CHANNEL = 0
@@ -31,7 +29,7 @@ SHOULDER180_MAX = 2400
 SHOULDER_MINTIME = 600
 SHOULDER_MAXTIME = 2200
 
-shoulder = Servo(pwm, SHOULDER_CHANNEL, SHOULDER180_MIN, SHOULDER180_MAX, SHOULDER_MINTIME, SHOULDER_MAXTIME)
+shoulder = Servo(pwm, SHOULDER_CHANNEL, SHOULDER180_MIN, SHOULDER180_MAX, SHOULDER_MINTIME, SHOULDER_MAXTIME, "shoulder", printing = True)
 joints['shoulder'] = shoulder
 
 #Elbow Servo - HS645MG
@@ -41,23 +39,23 @@ ELBOW_CHANNEL = 2
 ELBOW180_MIN = 850
 ELBOW180_MAX = 2250
 
-ELBOW_MINTIME = 910 
-ELBOW_MAXTIME = 1500 
+ELBOW_MINTIME = 1150 
+ELBOW_MAXTIME = 2400 
 
-elbow = Servo(pwm2, ELBOW_CHANNEL, ELBOW180_MIN, ELBOW180_MAX, ELBOW_MINTIME, ELBOW_MAXTIME, servoAngleMax = 150.0, frequency=300.0) 
+elbow = Servo(pwm2, ELBOW_CHANNEL, ELBOW180_MIN, ELBOW180_MAX, ELBOW_MINTIME, ELBOW_MAXTIME, "elbow", servoAngleMax = 150.0, frequency=300.0) 
 joints['elbow'] = elbow
-print("elbow done")
+
 #Wrist Servo - HS645MG 
 WRIST_CHANNEL = 5
 
 WRIST180_MIN = 650
 WRIST180_MAX = 2520
 
-WRIST_MINTIME = 900
+WRIST_MINTIME = 700 
 WRIST_MAXTIME = 2520
 
-wrist = Servo(pwm, WRIST_CHANNEL, WRIST180_MIN, WRIST180_MAX, WRIST_MINTIME, WRIST_MAXTIME)
-joints['wrist'] = wrist 
+wrist = Servo(pwm, WRIST_CHANNEL, WRIST180_MIN, WRIST180_MAX, WRIST_MINTIME, WRIST_MAXTIME, "wrist")
+joints['wrist'] = wrist
 
 #Neck Servo - HS422
 NECK_CHANNEL = 4
@@ -68,7 +66,7 @@ NECK180_MAX = 2590
 NECK_MINTIME = 600
 NECK_MAXTIME = 2590
 
-neck = Servo(pwm, NECK_CHANNEL, NECK180_MIN, NECK180_MAX, NECK_MINTIME, NECK_MAXTIME)
+neck = Servo(pwm, NECK_CHANNEL, NECK180_MIN, NECK180_MAX, NECK_MINTIME, NECK_MAXTIME, "neck")
 joints['neck'] = neck
 
 #Phone Servo - HS645MG
@@ -80,7 +78,7 @@ PHONE180_MAX = 2520
 PHONE_MINTIME = 553
 PHONE_MAXTIME = 2520
 
-phone = Servo(pwm, PHONE_CHANNEL, PHONE180_MIN, PHONE180_MAX, PHONE_MINTIME, PHONE_MAXTIME)
+phone = Servo(pwm, PHONE_CHANNEL, PHONE180_MIN, PHONE180_MAX, PHONE_MINTIME, PHONE_MAXTIME, "phone")
 joints['phone'] = phone
 robit = Robot(joints)
 
@@ -92,36 +90,33 @@ moveSet = {
     'phone': 40
 }
 
+def square(x):
+    return (x)**2
+
+def negSquare(x):
+    return -((x)-1)**2 + 1
 def sawTooth(x): 
     return math.sin(x - math.sin(x) / 2)
 
-def connectPhone(pool):
-    receivingPhone = {'shoulder': 65, 'elbow': 30, 'wrist': 63, 'neck': 90, 'phone': 90}
-    receivingPhone2 ={'shoulder': 35, 'elbow': 45, 'wrist': 95, 'neck': 90, 'phone': 90}
-    receivingPhone3 =  {'shoulder': 75, 'elbow': 18, 'wrist': 120, 'neck': 90, 'phone': 90}
-    headShake = {'shoulder': 75, 'elbow': 18, 'wrist': 120, 'neck': 70, 'phone': 90}
-    headShake2 = {'shoulder': 75, 'elbow': 18, 'wrist': 120, 'neck': 110, 'phone': 90}
-    headShake3 = {'shoulder': 75, 'elbow': 18, 'wrist': 120, 'neck': 70, 'phone': 90}
-    headShake4 = {'shoulder': 75, 'elbow': 18, 'wrist': 120, 'neck': 110, 'phone': 90}
-    activeMode2 ={'shoulder': 35, 'elbow': 45, 'wrist': 90, 'neck': 90, 'phone': 0}
 
-	 
-    moveSetArray = []
-    moveSetArray.extend([receivingPhone,receivingPhone2,receivingPhone3,headShake,headShake2,headShake3,\
-    headShake4,activeMode2])
-    #moveSetArray[0] =  
+def smoothInitializePosition(robit, pool):
+    initialPos = {'shoulder': 20, 'elbow': 50, 'wrist': 0, 'neck': 90, 'phone': 0, 'speed':0.004}
+    robit.moveToPos(initialPos,pool)
 
-    for pos in moveSetArray:
-        robit.moveToPos(pos, pool); 
+def noNoise(robit, pool):
+    pos = {'shoulder': 0, 'elbow':90, 'wrist':0, 'neck':90, 'phone':0, 'speed':0.004}
+    robit.moveToPos(pos, pool)
 
-def initialize(pool, robot):
-    robot.initialziePosition()
-    initialPos = {'shoulder':20, 'elbow':20, 'wrist':0, 'neck':90, 'phone':0, 'speed':0.006}
-    robit.moveToPos(intialPos, pool)
 if __name__=='__main__':
-    pool = ThreadPool(5)    
-    robit.initializePosition()
-    while (True): robit.setManyAngles()
+    try:
+        pool = ThreadPool(5)
+        smoothInitializePosition(robit, pool)
+        while(True):
+            robit.setManyAngles()
+    except KeyboardInterrupt: 
+        print("keyboard interruption")
+        robit.writePositions()
+        
 
 
 
