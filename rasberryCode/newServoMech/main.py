@@ -108,14 +108,14 @@ def connectPhone(pool):
     #highPoint = {'shoulder': 40, 'elbow': 120, 'wrist': 110, 'neck': 96, 'phone': 0, 'speed':0.001}
     #launchForward = {'shoulder': 70, 'elbow': 50, 'wrist': 90, 'neck': 96, 'phone': 0, 'speed':0.001}
 
-    rockBack = {'shoulder': 20, 'elbow': 65, 'wrist': 0, 'neck': 96, 'phone': 0, 'speed':0.004}
-    highPoint = {'shoulder': 60, 'elbow': 120, 'wrist': 110, 'neck': 96, 'phone': 0, 'speed':0.004}
-    launchForward = {'shoulder': 70, 'elbow': 50, 'wrist': 90, 'neck': 96, 'phone': 0, 'speed':0.006}
+    rockBack = {'shoulder': 20, 'elbow': 85, 'wrist': 0, 'neck': 96, 'phone': 0, 'speed':0.009}
+    highPoint = {'shoulder': 40, 'elbow': 120, 'wrist': 110, 'neck': 96, 'phone': 0, 'speed':0.004}
+    launchForward = {'shoulder': 70, 'elbow': 80, 'wrist': 90, 'neck': 96, 'phone': 0, 'speed':0.004}
     finalPose = {'shoulder': 40, 'elbow': 100, 'wrist': 50, 'neck': 96, 'phone': 90} 
     
     #shake twice
-    headshakeRight = {'shoulder': 70, 'elbow': 50, 'wrist': 90, 'neck': 117, 'phone': 0, 'speed': 0.039}
-    headshakeLeft = {'shoulder': 70, 'elbow': 50, 'wrist': 90, 'neck': 75, 'phone': 0, 'speed': 0.039}
+    headshakeRight = {'shoulder': 70, 'elbow': 80, 'wrist': 90, 'neck': 117, 'phone': 0, 'speed': 0.039}
+    headshakeLeft = {'shoulder': 70, 'elbow': 80, 'wrist': 90, 'neck': 75, 'phone': 0, 'speed': 0.039}
     
     
     #use these to return to the initialPosition
@@ -124,7 +124,8 @@ def connectPhone(pool):
     negSquareEPDict = {'shoulder': 2, 'elbow': 2, 'wrist':2, 'neck':2, 'phone':2}
     negSquareEP1 = {'shoulder':1, 'elbow': 1, 'wrist':1, 'neck':1, 'phone':1}
     
-    robit.moveToPos(rockBack, pool, squareDict, negSquareEP1) 
+    robit.moveToPos(rockBack, pool) 
+    print('rock back finished')
     robit.moveToPos(highPoint, pool, squareDict, negSquareEP1)
     robit.moveToPos(launchForward, pool, negSquareDict, negSquareEP1)
 
@@ -143,6 +144,8 @@ def smoothInitializePosition(robit, pool):
     initialPos = {'shoulder': 20, 'elbow': 50, 'wrist': 0, 'neck': 96, 'phone': 0, 'speed':0.005}
     robit.moveToPos(initialPos,pool)
 
+def oscilate(x):
+    return ((-0.5) * math.cos(20 * x)) + 0.5
 
 def off(robit, pool):
     receivingPhone = {'shoulder': 40, 'elbow': 65, 'wrist': 0, 'neck': 96, 'phone': 0} 
@@ -153,8 +156,10 @@ def quiet(robit, pool):
 
 pool = ThreadPool(5)
 
+
 def linear(x): 
     return 2*x
+
 def listeningMode(robit, pool):
     #standing is lower than initialMode
     initialMode = {'shoulder': 50, 'elbow': 100, 'wrist': 45, 'neck': 70, 'phone': 90, 'speed':0.006} 
@@ -170,7 +175,7 @@ def listeningMode(robit, pool):
     
     #finalPositions
     standing = {'shoulder': 30, 'elbow': 70, 'wrist': 40, 'neck': 96, 'phone': 90, 'speed':0.006}     
-    finalPos = {'shoulder':40, 'elbow':100, 'wrist':45, 'neck':70, 'phone':70, 'speed':0.017}
+    finalPos = {'shoulder': 50, 'elbow':100, 'wrist':45, 'neck':70, 'phone':70, 'speed':0.077}
     
     currPos = standing;
     robit.moveToPos(currPos, pool); 
@@ -198,10 +203,25 @@ def listeningMode(robit, pool):
             time.sleep(1)
 
     robit.moveToPos(finalPos, pool)
-        
-
-
-
+    time.sleep(1.5)
+    finalPos['phone'] = 90
+    robit.moveToPos(finalPos, pool)
+def slowOsc(x):
+    return (-0.5) * (math.cos(6 * x)) + 0.5
+def recognize(robit, pool): 
+    intitialMode = {'shoulder': 50, 'elbow':100, 'wrist':45, 'neck':70, 'phone':90, 'speed':0.006}
+    print("starting movement to initial pose")
+    robit.moveToPos(intitialMode, pool)
+    print("finished moving to iniitla pose")
+    straightenNeck = {'shoulder': 50, 'elbow':100, 'wrist':45, 'neck':80, 'phone':90, 'speed':0.025} 
+    robit.moveToPos(straightenNeck, pool)
+    lower = {'shoulder': 30, 'elbow': 70, 'wrist': 35, 'neck': 110, 'phone': 120, 'speed':0.002}
+    lowerFD = {'phone':oscilate, 'neck':oscilate, 'shoulder':slowOsc, 'wrist':slowOsc}
+    robit.moveToPos(lower, pool, lowerFD)
+    lower['phone'] = 90
+    robit.moveToPos(lower, pool)
+def shakeHead(robit, pool):
+    pass
 def activeNormal(robit, pool):
     initialMode = {'shoulder': 40, 'elbow': 100, 'wrist': 50, 'neck': 96, 'phone': 90, 'speed': 0.019}
     slightlyRaised = {'shoulder': 50, 'elbow': 110, 'wrist': 70, 'neck': 96, 'phone': 90, 'speed': 0.014}
@@ -225,8 +245,9 @@ def onMessage(client, userdata, message):
     if (messageStr == 'on'): connectPhone(pool)
     if (messageStr == 'off'): off(robit, pool)
     if (messageStr == 'happy'): listeningMode(robit, pool)
-    if (messageStr == 'action'): quiet(robit, pool)
+    if (messageStr == 'quiet'): quiet(robit, pool)
     if (messageStr == 'listen'): activeNormal(robit, pool)
+    if (messageStr == 'action'): recognize(robit, pool)
 
 smoothInitializePosition(robit, pool)
 

@@ -1,3 +1,4 @@
+
 #################################################
 # testing paho mqtt client
 #################################################
@@ -24,4 +25,18 @@ class pahoClient(object):
         self.client.loop()
     def loopStart(self):
         self.client.loop_forever()
-        
+
+    def publishMessage(self, message):
+        self.client.publish("emote", message)
+
+
+def andrewConnect(client, userdata, rc):
+    print("temp Connected")
+    client.subscribe("emote")
+    client.subscribe("motion", 2)
+def andrewMessage(client, userdata, message):
+    messageStr = str(message.payload.decode("utf-8"))
+    print("messgae recieved: " + messageStr)
+
+if __name__=='__main__':
+    wef = pahoClient(andrewConnect, andrewMessage)
