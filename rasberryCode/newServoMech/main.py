@@ -125,7 +125,6 @@ def connectPhone(pool):
     negSquareEP1 = {'shoulder':1, 'elbow': 1, 'wrist':1, 'neck':1, 'phone':1}
     
     robit.moveToPos(rockBack, pool) 
-    print('rock back finished')
     robit.moveToPos(highPoint, pool, squareDict, negSquareEP1)
     robit.moveToPos(launchForward, pool, negSquareDict, negSquareEP1)
 
@@ -135,7 +134,7 @@ def connectPhone(pool):
     robit.moveToPos(headshakeLeft, pool)
 
     robit.moveToPos(finalPose, pool)
-
+    listeningMode(robit, pool, True) 
 def quietMode(robit, pool):
     quietPos = {'shoulder': 0, 'elbow': 43, 'wrist': 0, 'neck': 96, 'phone': 0}
     robit.moveToPos(quietPos, pool)
@@ -145,7 +144,7 @@ def smoothInitializePosition(robit, pool):
     robit.moveToPos(initialPos,pool)
 
 def oscilate(x):
-    return ((-0.5) * math.cos(20 * x)) + 0.5
+    return ((-1) * math.cos(10 * x + math.pi/2)) 
 
 def off(robit, pool):
     receivingPhone = {'shoulder': 40, 'elbow': 65, 'wrist': 0, 'neck': 96, 'phone': 0} 
@@ -160,7 +159,7 @@ pool = ThreadPool(5)
 def linear(x): 
     return 2*x
 
-def listeningMode(robit, pool):
+def listeningMode(robit, pool, shouldContinue):
     #standing is lower than initialMode
     initialMode = {'shoulder': 50, 'elbow': 100, 'wrist': 45, 'neck': 70, 'phone': 90, 'speed':0.006} 
     
@@ -206,34 +205,98 @@ def listeningMode(robit, pool):
     time.sleep(1.5)
     finalPos['phone'] = 90
     robit.moveToPos(finalPos, pool)
+    time.sleep(0.5)
+    
+    if (shouldContinue): recognize(robit, pool)
+
 def slowOsc(x):
     return (-0.5) * (math.cos(6 * x)) + 0.5
+
 def recognize(robit, pool): 
-    intitialMode = {'shoulder': 50, 'elbow':100, 'wrist':45, 'neck':70, 'phone':90, 'speed':0.006}
-    print("starting movement to initial pose")
-    robit.moveToPos(intitialMode, pool)
-    print("finished moving to iniitla pose")
-    straightenNeck = {'shoulder': 50, 'elbow':100, 'wrist':45, 'neck':80, 'phone':90, 'speed':0.025} 
-    robit.moveToPos(straightenNeck, pool)
-    lower = {'shoulder': 30, 'elbow': 70, 'wrist': 35, 'neck': 110, 'phone': 120, 'speed':0.002}
-    lowerFD = {'phone':oscilate, 'neck':oscilate, 'shoulder':slowOsc, 'wrist':slowOsc}
-    robit.moveToPos(lower, pool, lowerFD)
-    lower['phone'] = 90
-    robit.moveToPos(lower, pool)
+    
+    intitialMode = {'shoulder': 50, 'elbow':100, 'wrist':45, 'neck':96, 'phone':90, 'speed':0.006}
+    #straightenNeck = {'shoulder': 50, 'elbow':100, 'wrist':45, 'neck':80, 'phone':90, 'speed':0.025} 
+    #robit.moveToPos(straightenNeck, pool)
+    initialModeCurves = {'shoulder':linear}
+    initialModeEP= {'shoulder':0.5}
+
+    shakeRight = {'shoulder': 50, 'elbow': 100, 'wrist': 45, 'neck': 60, 'phone': 95, 'speed':0.059}
+    shakeLeft = {'shoulder': 50, 'elbow': 100, 'wrist': 45, 'neck': 106, 'phone': 85, 'speed':0.059}
+    robit.moveToPos(shakeLeft, pool)
+    robit.moveToPos(shakeRight, pool)
+    robit.moveToPos(shakeLeft, pool)
+    robit.moveToPos(shakeRight, pool)
+    robit.moveToPos(shakeLeft, pool)
+    robit.moveToPos(shakeRight, pool)
+    shakeRight['phone'] = 90
+    shakeRight['neck'] = 96
+    robit.moveToPos(shakeRight, pool)
+    happyBounce(robit, pool)
 def shakeHead(robit, pool):
     pass
-def activeNormal(robit, pool):
-    initialMode = {'shoulder': 40, 'elbow': 100, 'wrist': 50, 'neck': 96, 'phone': 90, 'speed': 0.019}
-    slightlyRaised = {'shoulder': 50, 'elbow': 110, 'wrist': 70, 'neck': 96, 'phone': 90, 'speed': 0.014}
 
-    for i in range(3):
+def happyBounceFromPos(robit, pool):
+    initial = {'shoulder': shoulder.currentAngle, 'elbow': elbow.currentAngle, 'wrist': wrist.currentAngle, 'neck': neck.currentAngle, 'phone': phone.currentAngle, 'speed': 0.006}
+    robit.moveToPos(initial, pool)
+    print("initialzied")
+    
+    initialMode = {'shoulder': 20, 'elbow': 60, 'wrist': 52, 'neck': 96, 'phone': 90, 'speed': 0.005}
+    slightlyRaised = {'shoulder': 40, 'elbow': 60, 'wrist': 18, 'neck': 96, 'phone': 90, 'speed': 0.005}
+    
+    numSteps = 6 
+     
+    for i in range(numSteps):
         robit.moveToPos(slightlyRaised, pool)
         robit.moveToPos(initialMode, pool)
+    
+    robit.moveToPos(slightlyRaised, pool) 
+    
+def happyBounce(robit, pool):
+    initial = {'shoulder': 40, 'elbow': 100, 'wrist': 70, 'neck': 96, 'phone': 90, 'speed': 0.006}
+    robit.moveToPos(initial, pool)
+    print("initialzied")
+    
+    initialMode = {'shoulder': 40, 'elbow': 100, 'wrist': 52, 'neck': 96, 'phone': 90, 'speed': 0.005}
+    slightlyRaised = {'shoulder': 70, 'elbow': 100, 'wrist': 18, 'neck': 96, 'phone': 90, 'speed': 0.005}
+    
+    numSteps = 3 
+     
+    for i in range(numSteps):
+        robit.moveToPos(slightlyRaised, pool)
+        robit.moveToPos(initialMode, pool)
+    
+    robit.moveToPos(slightlyRaised, pool) 
 
+    leanForward = {'shoulder': 70, 'elbow': 150, 'wrist': 60, 'neck': 96, 'phone': 90} 
+    robit.moveToPos(leanForward, pool)
+    
+    
+    
+    
+    
+    
+    
+
+def recognizeNew(robit, pool):
+    finalPos = {'shoulder': 70, 'elbow':150, 'wrist':60, 'neck':96, 'phone':70, 'speed':0.077} 
+    robit.moveToPos(finalPos, pool)
+    time.sleep(1.5)
+    finalPos['phone'] = 90
+    robit.moveToPos(finalPos, pool)
+    time.sleep(1.5)
+    
+    
+    
+    
+    restingNeutral = {'shoulder': 40, 'elbow': 90, 'wrist': 45, 'neck': 96, 'phone': 90, 'speed':0.007}
+    restingFD = {'wrist': oscilate}
+    robit.moveToPos(restingNeutral, pool, restingFD)
+    happyBounceFromPos(robit, pool) 
 
 def noNoise(robit, pool):
     pos = {'shoulder': 0, 'elbow':90, 'wrist':0, 'neck':90, 'phone':0, 'speed':0.004}
     robit.moveToPos(pos, pool)
+
 def onConnect(client, userdata, rc):
     print("absolutley connected")
     client.subscribe("emote")
@@ -244,12 +307,13 @@ def onMessage(client, userdata, message):
     print("message recieved: " + messageStr)
     if (messageStr == 'on'): connectPhone(pool)
     if (messageStr == 'off'): off(robit, pool)
-    if (messageStr == 'happy'): listeningMode(robit, pool)
+    if (messageStr == 'happy'): listeningMode(robit, pool, False)
     if (messageStr == 'quiet'): quiet(robit, pool)
-    if (messageStr == 'listen'): activeNormal(robit, pool)
-    if (messageStr == 'action'): recognize(robit, pool)
+    if (messageStr == 'listen'): happyBounceFromPos(robit, pool)
+    if (messageStr == 'action'): recognizeNew(robit, pool)
 
 smoothInitializePosition(robit, pool)
+#paho = pahoClient(onConnect, onMessage)
 
 try:
     paho = pahoClient(onConnect, onMessage)

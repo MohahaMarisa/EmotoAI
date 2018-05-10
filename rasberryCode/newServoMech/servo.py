@@ -69,8 +69,8 @@ class Servo(object):
             
             self.currentAngle = self.mapToAngle(currentMS, self.minTime, self.maxTime, 0, self.angleMax)
             self.pwm.set_pwm(self.channel, 0, int(self.calcPulseLen(currentMS)))
-            theta += speed    
-            i+=1 
+            
+            theta = theta + speed
     
     def mapToAngle(self, value, start1, stop1, start2, stop2):
         outgoing = start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1))
