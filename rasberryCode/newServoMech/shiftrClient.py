@@ -2,18 +2,15 @@
 #################################################
 # testing paho mqtt client
 #################################################
-import time#maybe this is useful?
-from datetime import datetime#but not essential for my part
-import threading#idk, you do what you gotta do for threading
 
-import paho.mqtt.client as mqtt 
+import paho.mqtt.client as mqtt
 
 
-class pahoClient(object): 
+class pahoClient(object):
 
     def __init__(self, onConnect, onMessage):
         self.BROKER = 'broker.shiftr.io'
-        self.USERNAME = 'emotingWOZ' 
+        self.USERNAME = 'emotingPhysical'
         self.PASSWORD = 'lucasMarisaGautam'
         self.client = mqtt.Client("physical") #create new instance
         self.client.username_pw_set(self.USERNAME, self.PASSWORD)
@@ -27,16 +24,22 @@ class pahoClient(object):
         self.client.loop_forever()
 
     def publishMessage(self, message):
-        self.client.publish("emote", message)
+        
+        self.client.publish("phone", message)
 
 
 def andrewConnect(client, userdata, rc):
     print("temp Connected")
     client.subscribe("emote")
-    client.subscribe("motion", 2)
+    client.subscribe("motion", 2) 
+    
 def andrewMessage(client, userdata, message):
     messageStr = str(message.payload.decode("utf-8"))
     print("messgae recieved: " + messageStr)
 
 if __name__=='__main__':
     wef = pahoClient(andrewConnect, andrewMessage)
+    print("about to publish")
+    wef.publishMessage("phone")
+    print("message published")
+

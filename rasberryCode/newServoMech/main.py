@@ -108,7 +108,7 @@ def connectPhone(pool):
     #highPoint = {'shoulder': 40, 'elbow': 120, 'wrist': 110, 'neck': 96, 'phone': 0, 'speed':0.001}
     #launchForward = {'shoulder': 70, 'elbow': 50, 'wrist': 90, 'neck': 96, 'phone': 0, 'speed':0.001}
 
-    rockBack = {'shoulder': 20, 'elbow': 85, 'wrist': 0, 'neck': 96, 'phone': 0, 'speed':0.009}
+    rockBack = {'shoulder': 30, 'elbow': 85, 'wrist': 0, 'neck': 96, 'phone': 0, 'speed':0.012}
     highPoint = {'shoulder': 40, 'elbow': 120, 'wrist': 110, 'neck': 96, 'phone': 0, 'speed':0.004}
     launchForward = {'shoulder': 70, 'elbow': 80, 'wrist': 90, 'neck': 96, 'phone': 0, 'speed':0.004}
     finalPose = {'shoulder': 40, 'elbow': 100, 'wrist': 50, 'neck': 96, 'phone': 90} 
@@ -120,12 +120,13 @@ def connectPhone(pool):
     
     #use these to return to the initialPosition
     negSquareDict = {'shoulder': negSquare, 'elbow': negSquare, 'wrist': negSquare, 'neck': negSquare, 'phone': negSquare}
-    squareDict = {'shoulder':square, 'elbow':square, 'wrist':square, 'neck':square, 'phone':square}
+    squareDict = {'shoulder':linear, 'elbow':square, 'wrist':square, 'neck':square, 'phone':square}
     negSquareEPDict = {'shoulder': 2, 'elbow': 2, 'wrist':2, 'neck':2, 'phone':2}
     negSquareEP1 = {'shoulder':1, 'elbow': 1, 'wrist':1, 'neck':1, 'phone':1}
+    neg = {'shoulder':0.3, 'elbow': 1, 'wrist':1, 'neck':1, 'phone':1}
     
     robit.moveToPos(rockBack, pool) 
-    robit.moveToPos(highPoint, pool, squareDict, negSquareEP1)
+    robit.moveToPos(highPoint, pool, squareDict, neg)
     robit.moveToPos(launchForward, pool, negSquareDict, negSquareEP1)
 
     robit.moveToPos(headshakeRight, pool)
@@ -134,7 +135,11 @@ def connectPhone(pool):
     robit.moveToPos(headshakeLeft, pool)
 
     robit.moveToPos(finalPose, pool)
-    listeningMode(robit, pool, True) 
+    #paho.publishMessage("emoto")
+    #listeningMode(robit, pool, True) 
+    finalPos = {'shoulder': 30, 'elbow': 70, 'wrist': 40, 'neck': 96, 'phone': 90, 'speed':0.006}
+    robit.moveToPos(finalPos, pool)
+
 def quietMode(robit, pool):
     quietPos = {'shoulder': 0, 'elbow': 43, 'wrist': 0, 'neck': 96, 'phone': 0}
     robit.moveToPos(quietPos, pool)
@@ -149,6 +154,8 @@ def oscilate(x):
 def off(robit, pool):
     receivingPhone = {'shoulder': 40, 'elbow': 65, 'wrist': 0, 'neck': 96, 'phone': 0} 
     robit.moveToPos(receivingPhone,pool)
+    #paho.publishMessage("phone")
+
 def quiet(robit, pool):
     quietPos = {'shoulder':0, 'elbow':43, 'wrist':0, 'neck':95, 'phone':0, 'speed':0.004}
     robit.moveToPos(quietPos, pool)
@@ -177,7 +184,7 @@ def listeningMode(robit, pool, shouldContinue):
     finalPos = {'shoulder': 50, 'elbow':100, 'wrist':45, 'neck':70, 'phone':70, 'speed':0.077}
     
     currPos = standing;
-    robit.moveToPos(currPos, pool); 
+    #robit.moveToPos(currPos, pool); 
     
     for i in range(2): 
        initialMode['neck'] = neck.currentAngle
@@ -237,7 +244,7 @@ def shakeHead(robit, pool):
 
 def happyBounceFromPos(robit, pool):
     initial = {'shoulder': shoulder.currentAngle, 'elbow': elbow.currentAngle, 'wrist': wrist.currentAngle, 'neck': neck.currentAngle, 'phone': phone.currentAngle, 'speed': 0.006}
-    robit.moveToPos(initial, pool)
+    #robit.moveToPos(initial, pool)
     print("initialzied")
     
     initialMode = {'shoulder': 20, 'elbow': 60, 'wrist': 52, 'neck': 96, 'phone': 90, 'speed': 0.005}
@@ -304,13 +311,13 @@ def onConnect(client, userdata, rc):
 
 def onMessage(client, userdata, message):
     messageStr = str(message.payload.decode("utf-8"))
-    print("message recieved: " + messageStr)
-    if (messageStr == 'on'): connectPhone(pool)
-    if (messageStr == 'off'): off(robit, pool)
-    if (messageStr == 'happy'): listeningMode(robit, pool, False)
-    if (messageStr == 'quiet'): quiet(robit, pool)
-    if (messageStr == 'listen'): happyBounceFromPos(robit, pool)
-    if (messageStr == 'action'): recognizeNew(robit, pool)
+    print("message recieved: ", messageStr)
+    if (messageStr == 'on'): connectPhone(pool) #Starts first chain
+    if (messageStr == 'off'): off(robit, pool) #turns off
+    if (messageStr == 'happy'): listeningMode(robit, pool, True) #fun listening
+    if (messageStr == 'quiet'): quiet(robit, pool) #quiet
+    if (messageStr == 'listen'): happyBounceFromPos(robit, pool) 
+    if (messageStr == 'action'): recognizeNew(robit, pool) #recognize new person and recommend
 
 smoothInitializePosition(robit, pool)
 #paho = pahoClient(onConnect, onMessage)
