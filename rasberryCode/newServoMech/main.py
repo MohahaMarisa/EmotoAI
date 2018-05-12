@@ -150,6 +150,8 @@ def smoothInitializePosition(robit, pool):
 
 def oscilate(x):
     return ((-1) * math.cos(10 * x + math.pi/2)) 
+def vertOSC(x):
+    return ((-1) * math.cos(8 * x + math.pi/2))
 
 def off(robit, pool):
     receivingPhone = {'shoulder': 40, 'elbow': 65, 'wrist': 0, 'neck': 96, 'phone': 0} 
@@ -277,7 +279,41 @@ def happyBounce(robit, pool):
     leanForward = {'shoulder': 70, 'elbow': 150, 'wrist': 60, 'neck': 96, 'phone': 90} 
     robit.moveToPos(leanForward, pool)
     
+def checkWeather(robit, pool): 
+  
+    initial = {'shoulder': shoulder.currentAngle, 'elbow': elbow.currentAngle, 'wrist': wrist.currentAngle, 'neck': neck.currentAngle, 'phone': phone.currentAngle, 'speed': 0.004}
+    checkWeatherPose = {'shoulder': 120, 'elbow': 180, 'wrist': 27, 'neck': 45, 'phone': 90, 'speed': 0.004}
+    robit.moveToPos(checkWeatherPose, pool)
+    time.sleep(1);
+    checkWeatherPose2 = {'shoulder': 120, 'elbow': 180, 'wrist': 97, 'neck': 45, 'phone': 90, 'speed': 0.015} 
+    robit.moveToPos(checkWeatherPose2, pool)
     
+    time.sleep(0.5);  
+    
+    initial['phone'] = 0; 
+    initial['speed'] = 0.006
+    robit.moveToPos(initial, pool)
+
+    initial['neck'] = 110;
+    initial['speed'] = 0.012
+    initialOSC = {'neck':vertOSC}
+    robit.moveToPos(initial, pool, initialOSC)
+
+    
+def extendToUser(robot, pool): 
+     initial = {'shoulder': shoulder.currentAngle, 'elbow': elbow.currentAngle, 'wrist': wrist.currentAngle, 'neck': neck.currentAngle, 'phone': phone.currentAngle, 'speed': 0.004}
+     showToUser = {'shoulder': 120, 'elbow': 180, 'wrist': 0, 'neck': 80, 'phone': 0, 'speed': 0.004}
+     showToUserFD = {'shoulder': linear}
+     showToUserEP = {'shoulder': 0.5}
+     robit.moveToPos(showToUser, pool, showToUserFD, showToUserEP)
+     time.sleep(2)
+     initial['phone'] = 90;
+     
+     robit.moveToPos(initial, pool)
+
+
+def internetLookup(robit, pool):
+    pass; 
     
     
     
@@ -291,9 +327,6 @@ def recognizeNew(robit, pool):
     finalPos['phone'] = 90
     robit.moveToPos(finalPos, pool)
     time.sleep(1.5)
-    
-    
-    
     
     restingNeutral = {'shoulder': 40, 'elbow': 90, 'wrist': 45, 'neck': 96, 'phone': 90, 'speed':0.007}
     restingFD = {'wrist': oscilate}
@@ -310,14 +343,18 @@ def onConnect(client, userdata, rc):
     client.subscribe("motion", 2)
 
 def onMessage(client, userdata, message):
+    
     messageStr = str(message.payload.decode("utf-8"))
     print("message recieved: ", messageStr)
+     
     if (messageStr == 'on'): connectPhone(pool) #Starts first chain
     if (messageStr == 'off'): off(robit, pool) #turns off
     if (messageStr == 'happy'): listeningMode(robit, pool, True) #fun listening
     if (messageStr == 'quiet'): quiet(robit, pool) #quiet
     if (messageStr == 'listen'): happyBounceFromPos(robit, pool) 
     if (messageStr == 'action'): recognizeNew(robit, pool) #recognize new person and recommend
+    if (messageStr == 'weather'): checkWeather(robit, pool)
+    if (messageStr == 'sad'): extendToUser(robit, pool) 
 
 smoothInitializePosition(robit, pool)
 #paho = pahoClient(onConnect, onMessage)
