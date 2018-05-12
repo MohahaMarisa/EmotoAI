@@ -290,7 +290,6 @@ def checkWeather(robit, pool):
     
     time.sleep(0.5);  
     
-    initial['phone'] = 0; 
     initial['speed'] = 0.006
     robit.moveToPos(initial, pool)
 
@@ -302,7 +301,7 @@ def checkWeather(robit, pool):
     
 def extendToUser(robot, pool): 
      initial = {'shoulder': shoulder.currentAngle, 'elbow': elbow.currentAngle, 'wrist': wrist.currentAngle, 'neck': neck.currentAngle, 'phone': phone.currentAngle, 'speed': 0.004}
-     showToUser = {'shoulder': 120, 'elbow': 180, 'wrist': 0, 'neck': 80, 'phone': 0, 'speed': 0.004}
+     showToUser = {'shoulder': 120, 'elbow': 180, 'wrist': 0, 'neck': 80, 'phone': 0, 'speed': 0.002}
      showToUserFD = {'shoulder': linear}
      showToUserEP = {'shoulder': 0.5}
      robit.moveToPos(showToUser, pool, showToUserFD, showToUserEP)
